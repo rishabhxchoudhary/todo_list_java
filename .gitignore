@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+py/
+bundled_code.txt
+.DS_Store
