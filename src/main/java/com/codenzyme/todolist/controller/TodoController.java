@@ -37,19 +37,19 @@ public class TodoController {
 
     @PostMapping
     public ResponseEntity<TodoResponse> createTodo(@Valid @RequestBody CreateTodoDto body) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.addTodo(body.getName()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.addTodo(body.name()));
     }
 
     @PatchMapping("/{uuid}/updateTitle")
     public ResponseEntity<TodoResponse> updateTitle(@PathVariable UUID uuid, @Valid @RequestBody CreateTodoDto body) {
-        return service.updateTodo(uuid, body.getName(), false, true)
+        return service.updateTitle(uuid, body.name())
             .map(todo -> ResponseEntity.ok(todo))
             .orElse(ResponseEntity.notFound().build());
     }
 
     @PatchMapping("/{uuid}/toggle")
     public ResponseEntity<TodoResponse> toggleTodo(@PathVariable UUID uuid) {
-        return service.updateTodo(uuid,null, true, false)
+        return service.toggleFinished(uuid)
             .map(todo->ResponseEntity.ok(todo))
             .orElse(ResponseEntity.notFound().build());
     }

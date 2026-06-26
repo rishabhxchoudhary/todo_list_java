@@ -13,7 +13,7 @@ import com.codenzyme.todolist.repository.TodoRepository;
 
 @Service
 public class TodoService {
-    
+
     private final TodoRepository repo;
 
     public TodoService(TodoRepository repo) {
@@ -34,28 +34,28 @@ public class TodoService {
     }
 
     private TodoResponse toTodoResponse(Todo todo) {
-        TodoResponse todoResponse =  new TodoResponse(todo.getId(),todo.getName(), todo.getFinished());
+        TodoResponse todoResponse = new TodoResponse(todo.getId(), todo.getName(), todo.getFinished());
         return todoResponse;
     }
 
     public List<TodoResponse> listTodo() {
-        return repo.findAllByOrderByUpdatedAtDesc().stream().map(todo->{
-            return toTodoResponse(todo);
-        }).toList();
+        return repo.findAllByOrderByUpdatedAtDesc().stream().map(this::toTodoResponse).toList();
     }
 
-    public Optional<TodoResponse> updateTodo(UUID uuid, String updatedName, Boolean toggleFinished, Boolean updateTitle) {
-        Optional<Todo> check_todo = repo.findById(uuid);
-        if (check_todo.isPresent()) {
-            Todo todo = check_todo.get();
-            if (updateTitle) todo.setName(updatedName);
-            if (toggleFinished) todo.setFinished(!todo.getFinished());
+    public Optional<TodoResponse> updateTitle(UUID uuid, String name) {
+        return repo.findById(uuid).map(todo -> {
+            todo.setName(name);
             todo.setUpdatedAt(Instant.now());
-            repo.save(todo);
-            return Optional.of(toTodoResponse(todo));
-        } else {
-            return Optional.empty();
-        }
+            return toTodoResponse(repo.save(todo));
+        });
+    }
+
+    public Optional<TodoResponse> toggleFinished(UUID uuid) {
+        return repo.findById(uuid).map(todo -> {
+            todo.setFinished(!todo.getFinished());
+            todo.setUpdatedAt(Instant.now());
+            return toTodoResponse(repo.save(todo));
+        });
     }
 
 }
