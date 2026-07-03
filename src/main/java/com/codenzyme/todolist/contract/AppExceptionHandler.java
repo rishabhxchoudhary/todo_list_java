@@ -3,10 +3,12 @@ package com.codenzyme.todolist.contract;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.codenzyme.todolist.exception.UsernameTakenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -46,5 +48,15 @@ public class AppExceptionHandler {
     public ResponseEntity<String> handleGlobalException(Exception ex) {
         log.error("Unhandled exception", ex);
         return ResponseEntity.internalServerError().body("Internal Server Error");
+    }
+
+    @ExceptionHandler(UsernameTakenException.class)
+    public ResponseEntity<String> handleUsernameTaken(UsernameTakenException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> handleBadCredentials(BadCredentialsException ex) {
+        return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
     }
 }

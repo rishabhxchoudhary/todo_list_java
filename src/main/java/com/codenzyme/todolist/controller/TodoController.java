@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,6 +41,7 @@ public class TodoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.addTodo(body.name()));
     }
 
+    @PreAuthorize("hasRole('PAID')")
     @PatchMapping("/{uuid}/updateTitle")
     public ResponseEntity<TodoResponse> updateTitle(@PathVariable UUID uuid, @Valid @RequestBody CreateTodoDto body) {
         return service.updateTitle(uuid, body.name())
