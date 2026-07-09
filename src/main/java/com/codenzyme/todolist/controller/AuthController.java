@@ -4,10 +4,12 @@ import com.codenzyme.todolist.dto.LoginRequest;
 import com.codenzyme.todolist.dto.LoginResponse;
 import com.codenzyme.todolist.dto.SignupRequest;
 import com.codenzyme.todolist.dto.UserResponse;
+import com.codenzyme.todolist.entity.AppUser;
 import com.codenzyme.todolist.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,5 +29,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         return new ResponseEntity<>(authService.login(loginRequest), HttpStatus.OK);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> me(@AuthenticationPrincipal AppUser currentUser) {
+        return ResponseEntity.ok(new UserResponse(currentUser.getUsername()));
     }
 }
