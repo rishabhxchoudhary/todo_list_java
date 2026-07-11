@@ -1,9 +1,6 @@
 package com.codenzyme.todolist.controller;
 
-import com.codenzyme.todolist.dto.LoginRequest;
-import com.codenzyme.todolist.dto.LoginResponse;
-import com.codenzyme.todolist.dto.SignupRequest;
-import com.codenzyme.todolist.dto.UserResponse;
+import com.codenzyme.todolist.dto.*;
 import com.codenzyme.todolist.entity.AppUser;
 import com.codenzyme.todolist.service.AuthService;
 import jakarta.validation.Valid;
@@ -27,12 +24,23 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         return new ResponseEntity<>(authService.login(loginRequest), HttpStatus.OK);
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserResponse> me(@AuthenticationPrincipal AppUser currentUser) {
         return ResponseEntity.ok(new UserResponse(currentUser.getUsername()));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenResponse> refresh(@Valid @RequestBody TokenRequest tokenRequest) {
+        return ResponseEntity.ok(authService.refresh(tokenRequest));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@AuthenticationPrincipal AppUser currentUser) {
+        authService.logout(currentUser);
+        return ResponseEntity.noContent().build();
     }
 }
